@@ -1,0 +1,36 @@
+package com.practice.intern.ET.Expense.Tracker.API.Controller;
+
+import com.practice.intern.ET.Expense.Tracker.API.Model.Expense;
+import com.practice.intern.ET.Expense.Tracker.API.Service.ExpenseService;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
+
+@RestController
+@RequestMapping("/expenses")
+public class ExpenseController {
+    private final ExpenseService service;
+
+    public ExpenseController(ExpenseService service){
+        this.service = service;
+    }
+
+    @PostMapping
+    public ResponseEntity<Expense> addExpense(@RequestBody Expense expense){
+        Expense savedExpense = service.addExpense(expense);
+        return new ResponseEntity<>(savedExpense, HttpStatus.CREATED);
+    }
+
+    @GetMapping
+    public List<Expense> findAllExpense(){
+        return service.findAllExpenses();
+    }
+
+    @GetMapping("/{id}")
+    public Expense findByIdExpense(@PathVariable Long id){
+        return service.findByIdExpense(id);
+    }
+
+}

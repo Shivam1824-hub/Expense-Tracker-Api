@@ -46,11 +46,11 @@ public class Expense {
         this.category = category;
     }
 
-    public int getQuantityValue() {
+    public double getQuantityValue() {
         return quantityValue;
     }
 
-    public void setQuantityValue(int quantityValue) {
+    public void setQuantityValue(double quantityValue) {
         this.quantityValue = quantityValue;
     }
     public BigDecimal getAmount() {
@@ -60,6 +60,5 @@ public class Expense {
     public void setAmount(BigDecimal amount) {
         this.amount = amount;
     }
-
 
 }

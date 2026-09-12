@@ -1,5 +1,6 @@
 package com.practice.intern.ET.Expense.Tracker.API.Service;
 
+import com.practice.intern.ET.Expense.Tracker.API.Exception.ExpenseNotFoundException;
 import com.practice.intern.ET.Expense.Tracker.API.Model.Expense;
 import com.practice.intern.ET.Expense.Tracker.API.Repository.ExpenseRepository;
 import org.springframework.stereotype.Service;
@@ -23,11 +24,11 @@ public class ExpenseService {
     }
 
     public Expense findByIdExpense(Long id){
-        return repository.findById(id).orElseThrow(); // i will add exception layer then add that feature
+        return repository.findById(id).orElseThrow(() -> new ExpenseNotFoundException("Expense data not found with id "+id)); // i will add exception layer then add that feature
     }
 
     public Expense updateByIdExpense(Long id, Expense updateInfo){
-        Expense ex= repository.findById(id).orElseThrow();
+        Expense ex= repository.findById(id).orElseThrow(()->new ExpenseNotFoundException("Expense data not found with id "+id));
         ex.setItem(updateInfo.getItem());
         ex.setCategory(updateInfo.getCategory());
         ex.setQuantityValue(updateInfo.getQuantityValue());
@@ -36,7 +37,9 @@ public class ExpenseService {
     }
 
     public void deleteExpense(Long id){
-         repository.deleteById(id);
+        if(!repository.existsById(id)){
+            throw new ExpenseNotFoundException("Expense data not found with id "+id);
+        }repository.deleteById(id);
     }
 
 }

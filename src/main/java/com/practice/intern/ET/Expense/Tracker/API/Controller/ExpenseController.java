@@ -38,4 +38,10 @@ public class ExpenseController {
         return service.updateByIdExpense(id);
     }
 
+    @DeleteMapping("/{id}")
+    public String deleteById(@PathVariable Long id){
+         service.deleteExpense(id);
+         return "data has been deleted";
+    }
+
 }

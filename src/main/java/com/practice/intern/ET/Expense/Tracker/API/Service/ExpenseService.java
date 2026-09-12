@@ -26,4 +26,9 @@ public class ExpenseService {
         return repository.findById(id).orElseThrow(); // i will add exception layer then add that feature
     }
 
+    public Expense updateByIdExpense(Long id){
+        Expense ex= repository.findById(id).orElseThrow();
+        return repository.save(ex);
+    }
+
 }

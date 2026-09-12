@@ -26,8 +26,12 @@ public class ExpenseService {
         return repository.findById(id).orElseThrow(); // i will add exception layer then add that feature
     }
 
-    public Expense updateByIdExpense(Long id){
+    public Expense updateByIdExpense(Long id, Expense updateInfo){
         Expense ex= repository.findById(id).orElseThrow();
+        ex.setItem(updateInfo.getItem());
+        ex.setCategory(updateInfo.getCategory());
+        ex.setQuantityValue(updateInfo.getQuantityValue());
+        ex.setAmount(updateInfo.getAmount());
         return repository.save(ex);
     }
 

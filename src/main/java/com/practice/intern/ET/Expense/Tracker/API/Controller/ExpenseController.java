@@ -33,9 +33,9 @@ public class ExpenseController {
         return service.findByIdExpense(id);
     }
 
-    @PutMapping("/")
-    public Expense updateByIdExpense(@PathVariable Long id){
-        return service.updateByIdExpense(id);
+    @PutMapping("/{id}")
+    public Expense updateByIdExpense(@PathVariable Long id,@RequestParam Expense updateInfo){
+        return service.updateByIdExpense(id,updateInfo);
     }
 
     @DeleteMapping("/{id}")

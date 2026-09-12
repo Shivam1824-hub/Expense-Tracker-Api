@@ -17,10 +17,11 @@ public class Expense {
     private String item;
     private String category;
     private double quantityValue;
-    private BigDecimal amount;
+
 //    private enum quantityUnit {
 //        LITRE("l"), KILOGRAMS("kg"), PACKET("p");
 //    }
+    private BigDecimal amount;
 
     public Long getId() {
         return id;
@@ -53,6 +54,7 @@ public class Expense {
     public void setQuantityValue(double quantityValue) {
         this.quantityValue = quantityValue;
     }
+
     public BigDecimal getAmount() {
         return amount;
     }

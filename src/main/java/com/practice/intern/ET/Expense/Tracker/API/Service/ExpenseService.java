@@ -25,19 +25,20 @@ public class ExpenseService {
                 .amount(requestDto.getAmount())
                 .build();
 
-        Expense saved = repository.save(expense);
-        return new ExpenseResponseDto(saved.getId(), saved.getItem(), saved.getCategory(),saved.getQuantityValue(), saved.getAmount());
+        Expense added = repository.save(expense);
+        return new ExpenseResponseDto(added.getId(), added.getItem(), added.getCategory(),added.getQuantityValue(), added.getAmount());
     }
 
     public List<ExpenseResponseDto> findAllExpenses(){
-         List<Expense> expenses = repository.findAll();
-         return expenses.stream().map(
+         List<Expense> findall = repository.findAll();
+         return findall.stream().map(
                  ex-> ExpenseResponseDto.builder().id(ex.getId()).item(ex.getItem())
                          .quantityValue(ex.getQuantityValue()).category(ex.getCategory()).amount(ex.getAmount()).build()).toList();
     }
 
-    public Expense findByIdExpense(Long id){
-        return repository.findById(id).orElseThrow(() -> new ExpenseNotFoundException("Expense data not found with id "+id)); // i will add exception layer then add that feature
+    public ExpenseResponseDto findByIdExpense(Long id){
+        Expense findId = repository.findById(id).orElseThrow(() -> new ExpenseNotFoundException("Expense data not found with id "+id));
+        return new ExpenseResponseDto(findId.getId(),findId.getItem(), findId.getCategory(),findId.getQuantityValue(), findId.getAmount());
     }
 
     public Expense updateByIdExpense(Long id, Expense updateInfo){

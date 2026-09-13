@@ -3,6 +3,8 @@ package com.practice.intern.ET.Expense.Tracker.API.Service;
 import com.practice.intern.ET.Expense.Tracker.API.Exception.ExpenseNotFoundException;
 import com.practice.intern.ET.Expense.Tracker.API.Model.Expense;
 import com.practice.intern.ET.Expense.Tracker.API.Repository.ExpenseRepository;
+import com.practice.intern.ET.Expense.Tracker.API.dto.ExpenseRequestDto;
+import com.practice.intern.ET.Expense.Tracker.API.dto.ExpenseResponseDto;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -15,8 +17,14 @@ public class ExpenseService {
         this.repository = repository;
     }
 
-    public Expense addExpense(Expense expense){
-    return repository.save(expense);
+    public ExpenseResponseDto addExpense(ExpenseRequestDto requestDto){
+        Expense expense = new Expense();
+        expense.setItem(requestDto.getItem());
+        expense.setCategory(requestDto.getCategory());
+        expense.setQuantityValue(requestDto.getQuantityValue());
+        expense.setAmount(requestDto.getAmount());
+        Expense saved = repository.save(expense);
+        return new ExpenseResponseDto(saved.getId(), saved.getItem(), saved.getCategory(),saved.getQuantityValue(), saved.getAmount());
     }
 
     public List<Expense> findAllExpenses(){

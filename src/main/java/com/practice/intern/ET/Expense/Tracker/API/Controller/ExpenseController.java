@@ -2,6 +2,8 @@ package com.practice.intern.ET.Expense.Tracker.API.Controller;
 
 import com.practice.intern.ET.Expense.Tracker.API.Model.Expense;
 import com.practice.intern.ET.Expense.Tracker.API.Service.ExpenseService;
+import com.practice.intern.ET.Expense.Tracker.API.dto.ExpenseRequestDto;
+import com.practice.intern.ET.Expense.Tracker.API.dto.ExpenseResponseDto;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -18,8 +20,8 @@ public class ExpenseController {
     }
 
     @PostMapping
-    public ResponseEntity<Expense> addExpense(@RequestBody Expense expense){
-        Expense savedExpense = service.addExpense(expense);
+    public ResponseEntity<ExpenseResponseDto> addExpense(@RequestBody ExpenseRequestDto requestDto){
+        ExpenseResponseDto savedExpense = service.addExpense(requestDto);
         return new ResponseEntity<>(savedExpense, HttpStatus.CREATED);
     }
 

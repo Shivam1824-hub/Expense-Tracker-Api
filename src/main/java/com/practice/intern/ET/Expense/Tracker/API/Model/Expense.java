@@ -4,11 +4,13 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import lombok.Data;
 
 
 import java.math.BigDecimal;
 
 @Entity
+@Data
 public class Expense {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -17,50 +19,7 @@ public class Expense {
     private String item;
     private String category;
     private double quantityValue;
-
-//    private enum quantityUnit {
-//        LITRE("l"), KILOGRAMS("kg"), PACKET("p");
-//    }
+//    private enum quantityUnit {  LITRE("l"), KILOGRAMS("kg"), PACKET("p"); }
     private BigDecimal amount;
-
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
-
-    public String getItem() {
-        return item;
-    }
-
-    public void setItem(String item) {
-        this.item = item;
-    }
-
-    public String getCategory() {
-        return category;
-    }
-
-    public void setCategory(String category) {
-        this.category = category;
-    }
-
-    public double getQuantityValue() {
-        return quantityValue;
-    }
-
-    public void setQuantityValue(double quantityValue) {
-        this.quantityValue = quantityValue;
-    }
-
-    public BigDecimal getAmount() {
-        return amount;
-    }
-
-    public void setAmount(BigDecimal amount) {
-        this.amount = amount;
-    }
 
 }

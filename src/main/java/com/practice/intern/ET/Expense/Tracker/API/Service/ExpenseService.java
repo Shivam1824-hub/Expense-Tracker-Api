@@ -29,8 +29,11 @@ public class ExpenseService {
         return new ExpenseResponseDto(saved.getId(), saved.getItem(), saved.getCategory(),saved.getQuantityValue(), saved.getAmount());
     }
 
-    public List<Expense> findAllExpenses(){
-        return repository.findAll();
+    public List<ExpenseResponseDto> findAllExpenses(){
+         List<Expense> expenses = repository.findAll();
+         return expenses.stream().map(
+                 ex-> ExpenseResponseDto.builder().id(ex.getId()).item(ex.getItem())
+                         .quantityValue(ex.getQuantityValue()).category(ex.getCategory()).amount(ex.getAmount()).build()).toList();
     }
 
     public Expense findByIdExpense(Long id){

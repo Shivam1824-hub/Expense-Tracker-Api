@@ -26,8 +26,11 @@ public class ExpenseController {
     }
 
     @GetMapping
-    public List<Expense> findAllExpense(){
-        return service.findAllExpenses();
+    public ResponseEntity <List<ExpenseResponseDto>> findAllExpense(){
+        List<ExpenseResponseDto> ex = service.findAllExpenses();
+        if(ex.isEmpty()){
+            return ResponseEntity.noContent().build();
+        }return ResponseEntity.ok(ex);
     }
 
     @GetMapping("/{id}")

@@ -41,13 +41,19 @@ public class ExpenseService {
         return new ExpenseResponseDto(findId.getId(),findId.getItem(), findId.getCategory(),findId.getQuantityValue(), findId.getAmount());
     }
 
-    public Expense updateByIdExpense(Long id, Expense updateInfo){
+    public ExpenseResponseDto updateByIdExpense(Long id, ExpenseRequestDto updateInfo){
         Expense ex= repository.findById(id).orElseThrow(()->new ExpenseNotFoundException("Expense data not found with id "+id));
         ex.setItem(updateInfo.getItem());
         ex.setCategory(updateInfo.getCategory());
         ex.setQuantityValue(updateInfo.getQuantityValue());
         ex.setAmount(updateInfo.getAmount());
-        return repository.save(ex);
+
+        Expense saved = repository.save(ex);
+        return ExpenseResponseDto.builder() .item(saved.getItem())
+                .category(saved.getCategory())
+                .quantityValue(saved.getQuantityValue())
+                .amount(saved.getAmount())
+                .build();
     }
 
     public void deleteExpense(Long id){

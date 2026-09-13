@@ -1,10 +1,12 @@
 package com.practice.intern.ET.Expense.Tracker.API.dto;
 
+import lombok.Builder;
 import lombok.Data;
 
 import java.math.BigDecimal;
 
 @Data
+@Builder
 public class ExpenseResponseDto {
 
     private Long id;

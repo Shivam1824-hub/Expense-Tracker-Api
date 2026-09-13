@@ -18,11 +18,13 @@ public class ExpenseService {
     }
 
     public ExpenseResponseDto addExpense(ExpenseRequestDto requestDto){
-        Expense expense = new Expense();
-        expense.setItem(requestDto.getItem());
-        expense.setCategory(requestDto.getCategory());
-        expense.setQuantityValue(requestDto.getQuantityValue());
-        expense.setAmount(requestDto.getAmount());
+        Expense expense = Expense.builder()
+                .item(requestDto.getItem())
+                .category(requestDto.getCategory())
+                .quantityValue(requestDto.getQuantityValue())
+                .amount(requestDto.getAmount())
+                .build();
+
         Expense saved = repository.save(expense);
         return new ExpenseResponseDto(saved.getId(), saved.getItem(), saved.getCategory(),saved.getQuantityValue(), saved.getAmount());
     }

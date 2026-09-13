@@ -40,16 +40,16 @@ public class ExpenseController {
     }
 
     @PutMapping("/{id}")
-    public ExpenseResponseDto updateByIdExpense(@PathVariable Long id,@RequestBody ExpenseRequestDto updateInfo){
+    public ResponseEntity<ExpenseResponseDto> updateByIdExpense(@PathVariable Long id,@RequestBody ExpenseRequestDto updateInfo){
         ExpenseResponseDto updated = service.updateByIdExpense(id,updateInfo);
         return ResponseEntity.ok(updated);
     }
 
 
     @DeleteMapping("/{id}")
-    public String deleteById(@PathVariable Long id){
-         service.deleteExpense(id);
-         return "data has been deleted";
+    public ResponseEntity<String> deleteById(@PathVariable Long id){
+         String message =service.deleteExpense(id);
+         return ResponseEntity.ok(message);
     }
 
 }

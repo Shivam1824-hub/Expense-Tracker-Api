@@ -56,10 +56,11 @@ public class ExpenseService {
                 .build();
     }
 
-    public void deleteExpense(Long id){
+    public String deleteExpense(Long id){
         if(!repository.existsById(id)){
             throw new ExpenseNotFoundException("Expense data not found with id "+id);
         }repository.deleteById(id);
+        return "data has been deleted";
     }
 
 }

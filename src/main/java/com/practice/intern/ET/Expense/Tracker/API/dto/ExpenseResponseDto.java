@@ -7,15 +7,18 @@ import java.math.BigDecimal;
 @Data
 public class ExpenseResponseDto {
 
+    private Long id;
     private String item;
     private String category;
     private double quantityValue;
     private BigDecimal amount;
 
-    public ExpenseResponseDto(String item, double quantityValue, String category, BigDecimal amount) {
+
+    public ExpenseResponseDto(Long id, String item, String category, double quantityValue, BigDecimal amount) {
+        this.id = id;
         this.item = item;
-        this.quantityValue = quantityValue;
         this.category = category;
+        this.quantityValue = quantityValue;
         this.amount = amount;
     }
 }

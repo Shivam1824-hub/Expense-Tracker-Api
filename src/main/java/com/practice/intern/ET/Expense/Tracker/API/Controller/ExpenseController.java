@@ -4,6 +4,7 @@ import com.practice.intern.ET.Expense.Tracker.API.Model.Expense;
 import com.practice.intern.ET.Expense.Tracker.API.Service.ExpenseService;
 import com.practice.intern.ET.Expense.Tracker.API.dto.ExpenseRequestDto;
 import com.practice.intern.ET.Expense.Tracker.API.dto.ExpenseResponseDto;
+import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -20,7 +21,7 @@ public class ExpenseController {
     }
 
     @PostMapping
-    public ResponseEntity<ExpenseResponseDto> addExpense(@RequestBody ExpenseRequestDto requestDto){
+    public ResponseEntity<ExpenseResponseDto> addExpense(@Valid @RequestBody ExpenseRequestDto requestDto){
         ExpenseResponseDto savedExpense = service.addExpense(requestDto);
         return new ResponseEntity<>(savedExpense, HttpStatus.CREATED);
     }
@@ -40,7 +41,7 @@ public class ExpenseController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<ExpenseResponseDto> updateByIdExpense(@PathVariable Long id,@RequestBody ExpenseRequestDto updateInfo){
+    public ResponseEntity<ExpenseResponseDto> updateByIdExpense(@PathVariable Long id,@Valid @RequestBody ExpenseRequestDto updateInfo){
         ExpenseResponseDto updated = service.updateByIdExpense(id,updateInfo);
         return ResponseEntity.ok(updated);
     }

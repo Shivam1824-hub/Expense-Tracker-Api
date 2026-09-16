@@ -4,7 +4,9 @@ import com.practice.intern.ET.Expense.Tracker.API.Model.Expense;
 import com.practice.intern.ET.Expense.Tracker.API.Service.ExpenseService;
 import com.practice.intern.ET.Expense.Tracker.API.dto.ExpenseRequestDto;
 import com.practice.intern.ET.Expense.Tracker.API.dto.ExpenseResponseDto;
+import com.practice.intern.ET.Expense.Tracker.API.dto.ExpenseSearchRequestDto;
 import jakarta.validation.Valid;
+import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -51,6 +53,12 @@ public class ExpenseController {
     public ResponseEntity<String> deleteById(@PathVariable Long id){
          String message =service.deleteExpense(id);
          return ResponseEntity.ok(message);
+    }
+
+    @GetMapping
+    public ResponseEntity<Page<ExpenseResponseDto>> searchExpense(@Valid @ModelAttribute ExpenseSearchRequestDto search){
+    Page<ExpenseResponseDto> ex = service.searchExpense(search);
+    return ResponseEntity.ok(ex);
     }
 
 }

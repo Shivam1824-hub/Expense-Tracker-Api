@@ -5,6 +5,12 @@ import com.practice.intern.ET.Expense.Tracker.API.Model.Expense;
 import com.practice.intern.ET.Expense.Tracker.API.Repository.ExpenseRepository;
 import com.practice.intern.ET.Expense.Tracker.API.dto.ExpenseRequestDto;
 import com.practice.intern.ET.Expense.Tracker.API.dto.ExpenseResponseDto;
+import com.practice.intern.ET.Expense.Tracker.API.dto.ExpenseSearchRequestDto;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -13,11 +19,11 @@ import java.util.List;
 public class ExpenseService {
     private final ExpenseRepository repository;
 
-    public ExpenseService(ExpenseRepository repository){
+    public ExpenseService(ExpenseRepository repository) {
         this.repository = repository;
     }
 
-    public ExpenseResponseDto addExpense(ExpenseRequestDto requestDto){
+    public ExpenseResponseDto addExpense(ExpenseRequestDto requestDto) {
         Expense expense = Expense.builder()
                 .item(requestDto.getItem())
                 .category(requestDto.getCategory())
@@ -26,41 +32,59 @@ public class ExpenseService {
                 .build();
 
         Expense added = repository.save(expense);
-        return new ExpenseResponseDto(added.getId(), added.getItem(), added.getCategory(),added.getQuantityValue(), added.getAmount());
+        return new ExpenseResponseDto(added.getId(), added.getItem(), added.getCategory(), added.getQuantityValue(), added.getAmount());
     }
 
-    public List<ExpenseResponseDto> findAllExpenses(){
-         List<Expense> findall = repository.findAll();
-         return findall.stream().map(
-                 ex-> ExpenseResponseDto.builder().id(ex.getId()).item(ex.getItem())
-                         .quantityValue(ex.getQuantityValue()).category(ex.getCategory()).amount(ex.getAmount()).build()).toList();
+    public List<ExpenseResponseDto> findAllExpenses() {
+        List<Expense> findall = repository.findAll();
+        return findall.stream().map(
+                ex -> ExpenseResponseDto.builder().id(ex.getId()).item(ex.getItem())
+                        .quantityValue(ex.getQuantityValue()).category(ex.getCategory()).amount(ex.getAmount()).build()).toList();
     }
 
-    public ExpenseResponseDto findByIdExpense(Long id){
-        Expense findId = repository.findById(id).orElseThrow(() -> new ExpenseNotFoundException("Expense data not found with id "+id));
-        return new ExpenseResponseDto(findId.getId(),findId.getItem(), findId.getCategory(),findId.getQuantityValue(), findId.getAmount());
+    public ExpenseResponseDto findByIdExpense(Long id) {
+        Expense findId = repository.findById(id).orElseThrow(() -> new ExpenseNotFoundException("Expense data not found with id " + id));
+        return new ExpenseResponseDto(findId.getId(), findId.getItem(), findId.getCategory(), findId.getQuantityValue(), findId.getAmount());
     }
 
-    public ExpenseResponseDto updateByIdExpense(Long id, ExpenseRequestDto updateInfo){
-        Expense ex= repository.findById(id).orElseThrow(()->new ExpenseNotFoundException("Expense data not found with id "+id));
+    public ExpenseResponseDto updateByIdExpense(Long id, ExpenseRequestDto updateInfo) {
+        Expense ex = repository.findById(id).orElseThrow(() -> new ExpenseNotFoundException("Expense data not found with id " + id));
         ex.setItem(updateInfo.getItem());
         ex.setCategory(updateInfo.getCategory());
         ex.setQuantityValue(updateInfo.getQuantityValue());
         ex.setAmount(updateInfo.getAmount());
 
         Expense saved = repository.save(ex);
-        return ExpenseResponseDto.builder() .item(saved.getItem())
+        return ExpenseResponseDto.builder().item(saved.getItem())
                 .category(saved.getCategory())
                 .quantityValue(saved.getQuantityValue())
                 .amount(saved.getAmount())
                 .build();
     }
 
-    public String deleteExpense(Long id){
-        if(!repository.existsById(id)){
-            throw new ExpenseNotFoundException("Expense data not found with id "+id);
-        }repository.deleteById(id);
+    public String deleteExpense(Long id) {
+        if (!repository.existsById(id)) {
+            throw new ExpenseNotFoundException("Expense data not found with id " + id);
+        }
+        repository.deleteById(id);
         return "data has been deleted";
     }
 
+public Page<ExpenseResponseDto> searchExpense(ExpenseSearchRequestDto searchRequestDto){
+        Sort sort = "desc".equalsIgnoreCase(searchRequestDto.getDirection()) ?
+                Sort.by(searchRequestDto.getSort()).descending() : Sort.by(searchRequestDto.getSort()).ascending();
+        Pageable pageable = PageRequest.of(searchRequestDto.getPage(),searchRequestDto.getSize(),sort);
+        Specification<Expense> spec = (root, query, cb) -> cb.conjunction();
+
+        if(searchRequestDto.getKeyword()!= null && !searchRequestDto.getKeyword().trim().isEmpty()){
+            String matachPattern ="%"+searchRequestDto.getKeyword()+"%";
+            spec = spec.and((root, query, cb) ->cb.or(
+                    cb.like(cb.lower(root.get("item")),matachPattern),
+                    cb.like(cb.lower(root.get("category")),matachPattern)));
+        }
+    Page<Expense> expensePage = repository.findAll(spec,pageable);
+    return expensePage.map(ex -> ExpenseResponseDto.builder().id(ex.getId()).item(ex.getItem())
+            .quantityValue(ex.getQuantityValue()).category(ex.getCategory()).amount(ex.getAmount()).build());
+    }
 }
+

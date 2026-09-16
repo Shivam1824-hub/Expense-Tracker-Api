@@ -44,24 +44,25 @@ public class ExpenseService {
         List<Expense> findall = expenseRepository.findAll();
         return findall.stream().map(
                 ex -> ExpenseResponseDto.builder().id(ex.getId()).item(ex.getItem())
-                        .quantityValue(ex.getQuantityValue()).category(ex.getCategory()).amount(ex.getAmount()).build()).toList();
+                        .quantityValue(ex.getQuantityValue()).category(ex.getCategory().getId()).amount(ex.getAmount()).build()).toList();
     }
 
     public ExpenseResponseDto findByIdExpense(Long id) {
         Expense findId = expenseRepository.findById(id).orElseThrow(() -> new ExpenseNotFoundException("Expense data not found with id " + id));
-        return new ExpenseResponseDto(findId.getId(), findId.getItem(), findId.getCategory(), findId.getQuantityValue(), findId.getAmount());
+        return new ExpenseResponseDto(findId.getId(), findId.getItem(), findId.getCategory().getId(), findId.getQuantityValue(), findId.getAmount());
     }
 
     public ExpenseResponseDto updateByIdExpense(Long id, ExpenseRequestDto updateInfo) {
         Expense ex = expenseRepository.findById(id).orElseThrow(() -> new ExpenseNotFoundException("Expense data not found with id " + id));
+        Category category = categoryRepository.findById(id).orElseThrow();
         ex.setItem(updateInfo.getItem());
-        ex.setCategory(updateInfo.getCategory());
+        ex.setCategory(category);
         ex.setQuantityValue(updateInfo.getQuantityValue());
         ex.setAmount(updateInfo.getAmount());
 
         Expense saved = expenseRepository.save(ex);
         return ExpenseResponseDto.builder().item(saved.getItem())
-                .category(saved.getCategory())
+                .category(saved.getCategory().getId())
                 .quantityValue(saved.getQuantityValue())
                 .amount(saved.getAmount())
                 .build();
@@ -89,7 +90,7 @@ public Page<ExpenseResponseDto> searchExpense(ExpenseSearchRequestDto searchRequ
         }
     Page<Expense> expensePage = expenseRepository.findAll(spec,pageable);
     return expensePage.map(ex -> ExpenseResponseDto.builder().id(ex.getId()).item(ex.getItem())
-            .quantityValue(ex.getQuantityValue()).category(ex.getCategory()).amount(ex.getAmount()).build());
+            .quantityValue(ex.getQuantityValue()).category(ex.getCategory().getId()).amount(ex.getAmount()).build());
     }
 }
 

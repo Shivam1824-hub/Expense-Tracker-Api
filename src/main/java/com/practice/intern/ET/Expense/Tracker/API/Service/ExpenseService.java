@@ -1,7 +1,9 @@
 package com.practice.intern.ET.Expense.Tracker.API.Service;
 
 import com.practice.intern.ET.Expense.Tracker.API.Exception.ExpenseNotFoundException;
+import com.practice.intern.ET.Expense.Tracker.API.Model.Category;
 import com.practice.intern.ET.Expense.Tracker.API.Model.Expense;
+import com.practice.intern.ET.Expense.Tracker.API.Repository.CategoryRepository;
 import com.practice.intern.ET.Expense.Tracker.API.Repository.ExpenseRepository;
 import com.practice.intern.ET.Expense.Tracker.API.dto.ExpenseRequestDto;
 import com.practice.intern.ET.Expense.Tracker.API.dto.ExpenseResponseDto;
@@ -17,44 +19,47 @@ import java.util.List;
 
 @Service
 public class ExpenseService {
-    private final ExpenseRepository repository;
+    private final ExpenseRepository expenseRepository ;
+    private final CategoryRepository categoryRepository;
 
-    public ExpenseService(ExpenseRepository repository) {
-        this.repository = repository;
+    public ExpenseService(ExpenseRepository expenseRepository, CategoryRepository categoryRepository) {
+        this.expenseRepository = expenseRepository;
+        this.categoryRepository = categoryRepository;
     }
 
     public ExpenseResponseDto addExpense(ExpenseRequestDto requestDto) {
+        Category category = categoryRepository.findById(requestDto.getCategoryId()).orElseThrow();
         Expense expense = Expense.builder()
                 .item(requestDto.getItem())
-                .category(requestDto.getCategory())
+                .category(category)
                 .quantityValue(requestDto.getQuantityValue())
                 .amount(requestDto.getAmount())
                 .build();
 
-        Expense added = repository.save(expense);
-        return new ExpenseResponseDto(added.getId(), added.getItem(), added.getCategory(), added.getQuantityValue(), added.getAmount());
+        Expense added = expenseRepository.save(expense);
+        return new ExpenseResponseDto(added.getId(), added.getItem(), added.getCategory().getId(), added.getQuantityValue(), added.getAmount());
     }
 
     public List<ExpenseResponseDto> findAllExpenses() {
-        List<Expense> findall = repository.findAll();
+        List<Expense> findall = expenseRepository.findAll();
         return findall.stream().map(
                 ex -> ExpenseResponseDto.builder().id(ex.getId()).item(ex.getItem())
                         .quantityValue(ex.getQuantityValue()).category(ex.getCategory()).amount(ex.getAmount()).build()).toList();
     }
 
     public ExpenseResponseDto findByIdExpense(Long id) {
-        Expense findId = repository.findById(id).orElseThrow(() -> new ExpenseNotFoundException("Expense data not found with id " + id));
+        Expense findId = expenseRepository.findById(id).orElseThrow(() -> new ExpenseNotFoundException("Expense data not found with id " + id));
         return new ExpenseResponseDto(findId.getId(), findId.getItem(), findId.getCategory(), findId.getQuantityValue(), findId.getAmount());
     }
 
     public ExpenseResponseDto updateByIdExpense(Long id, ExpenseRequestDto updateInfo) {
-        Expense ex = repository.findById(id).orElseThrow(() -> new ExpenseNotFoundException("Expense data not found with id " + id));
+        Expense ex = expenseRepository.findById(id).orElseThrow(() -> new ExpenseNotFoundException("Expense data not found with id " + id));
         ex.setItem(updateInfo.getItem());
         ex.setCategory(updateInfo.getCategory());
         ex.setQuantityValue(updateInfo.getQuantityValue());
         ex.setAmount(updateInfo.getAmount());
 
-        Expense saved = repository.save(ex);
+        Expense saved = expenseRepository.save(ex);
         return ExpenseResponseDto.builder().item(saved.getItem())
                 .category(saved.getCategory())
                 .quantityValue(saved.getQuantityValue())
@@ -63,10 +68,10 @@ public class ExpenseService {
     }
 
     public String deleteExpense(Long id) {
-        if (!repository.existsById(id)) {
+        if (!expenseRepository.existsById(id)) {
             throw new ExpenseNotFoundException("Expense data not found with id " + id);
         }
-        repository.deleteById(id);
+        expenseRepository.deleteById(id);
         return "data has been deleted";
     }
 
@@ -82,7 +87,7 @@ public Page<ExpenseResponseDto> searchExpense(ExpenseSearchRequestDto searchRequ
                     cb.like(cb.lower(root.get("item")),matachPattern),
                     cb.like(cb.lower(root.get("category")),matachPattern)));
         }
-    Page<Expense> expensePage = repository.findAll(spec,pageable);
+    Page<Expense> expensePage = expenseRepository.findAll(spec,pageable);
     return expensePage.map(ex -> ExpenseResponseDto.builder().id(ex.getId()).item(ex.getItem())
             .quantityValue(ex.getQuantityValue()).category(ex.getCategory()).amount(ex.getAmount()).build());
     }

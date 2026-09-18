@@ -31,6 +31,7 @@ public class ExpenseService {
     }
     public ExpenseResponseDto toResponeDto(Expense expense){
         return ExpenseResponseDto.builder()
+                .id(expense.getId())
                 .item(expense.getItem())
                 .categoryId(expense.getCategory().getId())
                 .quantityValue(expense.getQuantityValue())
@@ -40,7 +41,7 @@ public class ExpenseService {
 
     public ExpenseResponseDto addExpense(ExpenseRequestDto requestDto) {
         Category category = categoryRepository.findById(requestDto.getCategoryId()).orElseThrow(
-                ()-> new CategoryNotFoundException("Category not found with id"+requestDto.getCategoryId()));
+                ()-> new CategoryNotFoundException("Category not found with id "+requestDto.getCategoryId()));
         Expense expense = Expense.builder()
                 .item(requestDto.getItem())
                 .category(category)
@@ -70,7 +71,7 @@ public class ExpenseService {
         Expense ex = expenseRepository.findById(id).orElseThrow(
                 () -> new ExpenseNotFoundException("Expense data not found with id " + id));
         Category category = categoryRepository.findById(updateInfo.getCategoryId()).orElseThrow(
-                ()->new CategoryNotFoundException("Category not found with id"+updateInfo.getCategoryId()));
+                ()->new CategoryNotFoundException("Category not found with id "+updateInfo.getCategoryId()));
         ex.setItem(updateInfo.getItem());
         ex.setCategory(category);
         ex.setQuantityValue(updateInfo.getQuantityValue());
@@ -89,8 +90,11 @@ public class ExpenseService {
     }
 
 public Page<ExpenseResponseDto> searchExpense(ExpenseSearchRequestDto searchRequestDto){
-        Sort sort = "desc".equalsIgnoreCase(searchRequestDto.getDirection()) ?
-                Sort.by(searchRequestDto.getSort()).descending() : Sort.by(searchRequestDto.getSort()).ascending();
+    String sortField = searchRequestDto.getSort();
+    if ("category".equals(sortField)) {
+        sortField = "category.name";}
+    Sort sort = "desc".equalsIgnoreCase(searchRequestDto.getDirection()) ?
+                Sort.by(sortField).descending() : Sort.by(sortField).ascending();
         Pageable pageable = PageRequest.of(searchRequestDto.getPage(),searchRequestDto.getSize(),sort);
         Specification<Expense> spec = (root, query, cb) -> cb.conjunction();
 
@@ -99,7 +103,7 @@ public Page<ExpenseResponseDto> searchExpense(ExpenseSearchRequestDto searchRequ
                     "%" + searchRequestDto.getKeyword().trim().toLowerCase() + "%";
             spec = spec.and((root, query, cb) ->cb.or(
                     cb.like(cb.lower(root.get("item")),matchPattern),
-                    cb.like(cb.lower(root.get("category")),matchPattern)));
+                    cb.like(cb.lower(root.join("category").get("name")),matchPattern)));
         }
     Page<Expense> expensePage = expenseRepository.findAll(spec,pageable);
     return expensePage.map(this::toResponeDto);

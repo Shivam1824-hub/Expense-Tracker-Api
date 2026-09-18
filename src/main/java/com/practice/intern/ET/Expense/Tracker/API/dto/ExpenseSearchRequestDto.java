@@ -15,7 +15,7 @@ public class ExpenseSearchRequestDto {
     private int size =5;
 
     @Pattern(regexp = "item|category|quantityValue|amount",
-            message = "sort must be one of: item, category, quantityValue, amount")
+            message = "sort must be one of: item, categoryName, quantityValue, amount")
     private String sort = "amount";
     @Pattern(regexp = "asc|desc",
             message = "direction must be one of: ascending or descending")

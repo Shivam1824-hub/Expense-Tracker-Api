@@ -6,6 +6,8 @@ import com.practice.intern.ET.Expense.Tracker.API.dto.CategoryRequestDto;
 import com.practice.intern.ET.Expense.Tracker.API.dto.CategoryResponseDto;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+
 @Service
 public class CategoryService {
     private final CategoryRepository categoryRepository;
@@ -23,5 +25,11 @@ public class CategoryService {
         dto.setId(savedcategory.getId());
         dto.setName(savedcategory.getName());
         return dto;
+    }
+
+    public List<CategoryResponseDto> getAllCategory(){
+        List<Category> findall = categoryRepository.findAll();
+        return findall.stream().map(category
+                -> new CategoryResponseDto(category.getId(), category.getName())).toList();
     }
 }

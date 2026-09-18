@@ -51,8 +51,6 @@ public class ExpenseService {
         return toResponseDto(added);
     }
 
-
-
     public List<ExpenseResponseDto> findAllExpenses() {
         List<Expense> findall = expenseRepository.findAll();
         return findall.stream()

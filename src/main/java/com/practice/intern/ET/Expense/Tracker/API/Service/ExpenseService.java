@@ -29,9 +29,18 @@ public class ExpenseService {
         this.expenseRepository = expenseRepository;
         this.categoryRepository = categoryRepository;
     }
+    public ExpenseResponseDto toResponeDto(Expense expense){
+        return ExpenseResponseDto.builder()
+                .item(expense.getItem())
+                .categoryId(expense.getCategory().getId())
+                .quantityValue(expense.getQuantityValue())
+                .amount(expense.getAmount())
+                .build();
+    }
 
     public ExpenseResponseDto addExpense(ExpenseRequestDto requestDto) {
-        Category category = categoryRepository.findById(requestDto.getCategoryId()).orElseThrow(()-> new CategoryNotFoundException("Category not found with id"+requestDto.getCategoryId()));
+        Category category = categoryRepository.findById(requestDto.getCategoryId()).orElseThrow(
+                ()-> new CategoryNotFoundException("Category not found with id"+requestDto.getCategoryId()));
         Expense expense = Expense.builder()
                 .item(requestDto.getItem())
                 .category(category)
@@ -40,36 +49,35 @@ public class ExpenseService {
                 .build();
 
         Expense added = expenseRepository.save(expense);
-        return new ExpenseResponseDto(added.getId(), added.getItem(), added.getCategory().getId(), added.getQuantityValue(), added.getAmount());
+        return toResponeDto(added);
     }
+
+
 
     public List<ExpenseResponseDto> findAllExpenses() {
         List<Expense> findall = expenseRepository.findAll();
-        return findall.stream().map(
-                ex -> ExpenseResponseDto.builder().id(ex.getId()).item(ex.getItem())
-                        .quantityValue(ex.getQuantityValue()).categoryId(ex.getCategory().getId()).amount(ex.getAmount()).build()).toList();
+        return findall.stream()
+                .map(this::toResponeDto).toList();
     }
 
     public ExpenseResponseDto findByIdExpense(Long id) {
-        Expense findId = expenseRepository.findById(id).orElseThrow(() -> new ExpenseNotFoundException("Expense data not found with id " + id));
-        return new ExpenseResponseDto(findId.getId(), findId.getItem(), findId.getCategory().getId(), findId.getQuantityValue(), findId.getAmount());
+        Expense findId = expenseRepository.findById(id).orElseThrow(
+                () -> new ExpenseNotFoundException("Expense data not found with id " + id));
+        return toResponeDto(findId);
     }
 
     public ExpenseResponseDto updateByIdExpense(Long id, ExpenseRequestDto updateInfo) {
-        Expense ex = expenseRepository.findById(id).orElseThrow(() -> new ExpenseNotFoundException("Expense data not found with id " + id));
-        Category category = categoryRepository.findById(updateInfo.getCategoryId()).orElseThrow(()->new CategoryNotFoundException("Category not found with id"+updateInfo.getCategoryId()));
+        Expense ex = expenseRepository.findById(id).orElseThrow(
+                () -> new ExpenseNotFoundException("Expense data not found with id " + id));
+        Category category = categoryRepository.findById(updateInfo.getCategoryId()).orElseThrow(
+                ()->new CategoryNotFoundException("Category not found with id"+updateInfo.getCategoryId()));
         ex.setItem(updateInfo.getItem());
         ex.setCategory(category);
         ex.setQuantityValue(updateInfo.getQuantityValue());
         ex.setAmount(updateInfo.getAmount());
 
         Expense saved = expenseRepository.save(ex);
-        return ExpenseResponseDto.builder().id(saved.getId())
-                .item(saved.getItem())
-                .categoryId(saved.getCategory().getId())
-                .quantityValue(saved.getQuantityValue())
-                .amount(saved.getAmount())
-                .build();
+        return toResponeDto(saved);
     }
 
     public String deleteExpense(Long id) {
@@ -94,8 +102,7 @@ public Page<ExpenseResponseDto> searchExpense(ExpenseSearchRequestDto searchRequ
                     cb.like(cb.lower(root.get("category")),matchPattern)));
         }
     Page<Expense> expensePage = expenseRepository.findAll(spec,pageable);
-    return expensePage.map(ex -> ExpenseResponseDto.builder().id(ex.getId()).item(ex.getItem())
-            .quantityValue(ex.getQuantityValue()).categoryId(ex.getCategory().getId()).amount(ex.getAmount()).build());
+    return expensePage.map(this::toResponeDto);
     }
 }
 

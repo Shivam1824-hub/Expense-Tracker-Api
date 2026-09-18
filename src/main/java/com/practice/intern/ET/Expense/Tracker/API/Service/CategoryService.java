@@ -1,5 +1,6 @@
 package com.practice.intern.ET.Expense.Tracker.API.Service;
 
+import com.practice.intern.ET.Expense.Tracker.API.Exception.CategoryNotFoundException;
 import com.practice.intern.ET.Expense.Tracker.API.Model.Category;
 import com.practice.intern.ET.Expense.Tracker.API.Repository.CategoryRepository;
 import com.practice.intern.ET.Expense.Tracker.API.dto.CategoryRequestDto;
@@ -31,5 +32,11 @@ public class CategoryService {
         List<Category> findall = categoryRepository.findAll();
         return findall.stream().map(category
                 -> new CategoryResponseDto(category.getId(), category.getName())).toList();
+    }
+
+    public CategoryResponseDto getByIdCategory(Long id){
+        Category findId = categoryRepository.findById(id).orElseThrow(
+                ()->new CategoryNotFoundException("Category data not found with id "+id));
+        return new CategoryResponseDto(findId.getId(),findId.getName());
     }
 }

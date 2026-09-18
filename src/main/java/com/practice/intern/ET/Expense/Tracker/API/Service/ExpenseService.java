@@ -14,9 +14,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
-import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
-import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
 
@@ -29,7 +27,7 @@ public class ExpenseService {
         this.expenseRepository = expenseRepository;
         this.categoryRepository = categoryRepository;
     }
-    public ExpenseResponseDto toResponeDto(Expense expense){
+    public ExpenseResponseDto toResponseDto(Expense expense){
         return ExpenseResponseDto.builder()
                 .id(expense.getId())
                 .item(expense.getItem())
@@ -39,7 +37,7 @@ public class ExpenseService {
                 .build();
     }
 
-    public ExpenseResponseDto addExpense(ExpenseRequestDto requestDto) {
+    public ExpenseResponseDto createExpense(ExpenseRequestDto requestDto) {
         Category category = categoryRepository.findById(requestDto.getCategoryId()).orElseThrow(
                 ()-> new CategoryNotFoundException("Category not found with id "+requestDto.getCategoryId()));
         Expense expense = Expense.builder()
@@ -50,7 +48,7 @@ public class ExpenseService {
                 .build();
 
         Expense added = expenseRepository.save(expense);
-        return toResponeDto(added);
+        return toResponseDto(added);
     }
 
 
@@ -58,13 +56,13 @@ public class ExpenseService {
     public List<ExpenseResponseDto> findAllExpenses() {
         List<Expense> findall = expenseRepository.findAll();
         return findall.stream()
-                .map(this::toResponeDto).toList();
+                .map(this::toResponseDto).toList();
     }
 
     public ExpenseResponseDto findByIdExpense(Long id) {
         Expense findId = expenseRepository.findById(id).orElseThrow(
                 () -> new ExpenseNotFoundException("Expense data not found with id " + id));
-        return toResponeDto(findId);
+        return toResponseDto(findId);
     }
 
     public ExpenseResponseDto updateByIdExpense(Long id, ExpenseRequestDto updateInfo) {
@@ -78,7 +76,7 @@ public class ExpenseService {
         ex.setAmount(updateInfo.getAmount());
 
         Expense saved = expenseRepository.save(ex);
-        return toResponeDto(saved);
+        return toResponseDto(saved);
     }
 
     public String deleteExpense(Long id) {
@@ -106,7 +104,7 @@ public Page<ExpenseResponseDto> searchExpense(ExpenseSearchRequestDto searchRequ
                     cb.like(cb.lower(root.join("category").get("name")),matchPattern)));
         }
     Page<Expense> expensePage = expenseRepository.findAll(spec,pageable);
-    return expensePage.map(this::toResponeDto);
+    return expensePage.map(this::toResponseDto);
     }
 }
 

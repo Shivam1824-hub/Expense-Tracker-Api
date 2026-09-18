@@ -1,0 +1,27 @@
+package com.practice.intern.ET.Expense.Tracker.API.Service;
+
+import com.practice.intern.ET.Expense.Tracker.API.Model.Category;
+import com.practice.intern.ET.Expense.Tracker.API.Repository.CategoryRepository;
+import com.practice.intern.ET.Expense.Tracker.API.dto.CategoryRequestDto;
+import com.practice.intern.ET.Expense.Tracker.API.dto.CategoryResponseDto;
+import org.springframework.stereotype.Service;
+
+@Service
+public class CategoryService {
+    private final CategoryRepository categoryRepository;
+
+    public CategoryService(CategoryRepository categoryRepository) {
+        this.categoryRepository = categoryRepository;
+    }
+    //CRUD - post, get, put, delete
+    public CategoryResponseDto createCategory(CategoryRequestDto requestDto){
+        Category category = new Category();
+        category.setName(requestDto.getName());
+        Category savedcategory = categoryRepository.save(category);
+
+        CategoryResponseDto dto = new CategoryResponseDto();
+        dto.setId(savedcategory.getId());
+        dto.setName(savedcategory.getName());
+        return dto;
+    }
+}

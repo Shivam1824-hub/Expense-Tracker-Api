@@ -11,15 +11,15 @@ public class ExpenseResponseDto {
 
     private Long id;
     private String item;
-    private Long category;
+    private Long categoryId;
     private double quantityValue;
     private BigDecimal amount;
 
 
-    public ExpenseResponseDto(Long id, String item, Long category, double quantityValue, BigDecimal amount) {
+    public ExpenseResponseDto(Long id, String item, Long categoryId, double quantityValue, BigDecimal amount) {
         this.id = id;
         this.item = item;
-        this.category = category;
+        this.categoryId = categoryId;
         this.quantityValue = quantityValue;
         this.amount = amount;
     }

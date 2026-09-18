@@ -13,7 +13,9 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
 
@@ -28,7 +30,7 @@ public class ExpenseService {
     }
 
     public ExpenseResponseDto addExpense(ExpenseRequestDto requestDto) {
-        Category category = categoryRepository.findById(requestDto.getCategoryId()).orElseThrow();
+        Category category = categoryRepository.findById(requestDto.getCategoryId()).orElseThrow(()-> new ResponseStatusException(HttpStatus.NOT_FOUND));
         Expense expense = Expense.builder()
                 .item(requestDto.getItem())
                 .category(category)
@@ -44,7 +46,7 @@ public class ExpenseService {
         List<Expense> findall = expenseRepository.findAll();
         return findall.stream().map(
                 ex -> ExpenseResponseDto.builder().id(ex.getId()).item(ex.getItem())
-                        .quantityValue(ex.getQuantityValue()).category(ex.getCategory().getId()).amount(ex.getAmount()).build()).toList();
+                        .quantityValue(ex.getQuantityValue()).categoryId(ex.getCategory().getId()).amount(ex.getAmount()).build()).toList();
     }
 
     public ExpenseResponseDto findByIdExpense(Long id) {
@@ -54,7 +56,7 @@ public class ExpenseService {
 
     public ExpenseResponseDto updateByIdExpense(Long id, ExpenseRequestDto updateInfo) {
         Expense ex = expenseRepository.findById(id).orElseThrow(() -> new ExpenseNotFoundException("Expense data not found with id " + id));
-        Category category = categoryRepository.findById(id).orElseThrow();
+        Category category = categoryRepository.findById(updateInfo.getCategoryId()).orElseThrow(()-> new ResponseStatusException(HttpStatus.NOT_FOUND));
         ex.setItem(updateInfo.getItem());
         ex.setCategory(category);
         ex.setQuantityValue(updateInfo.getQuantityValue());
@@ -62,7 +64,7 @@ public class ExpenseService {
 
         Expense saved = expenseRepository.save(ex);
         return ExpenseResponseDto.builder().item(saved.getItem())
-                .category(saved.getCategory().getId())
+                .categoryId(saved.getCategory().getId())
                 .quantityValue(saved.getQuantityValue())
                 .amount(saved.getAmount())
                 .build();
@@ -90,7 +92,7 @@ public Page<ExpenseResponseDto> searchExpense(ExpenseSearchRequestDto searchRequ
         }
     Page<Expense> expensePage = expenseRepository.findAll(spec,pageable);
     return expensePage.map(ex -> ExpenseResponseDto.builder().id(ex.getId()).item(ex.getItem())
-            .quantityValue(ex.getQuantityValue()).category(ex.getCategory().getId()).amount(ex.getAmount()).build());
+            .quantityValue(ex.getQuantityValue()).categoryId(ex.getCategory().getId()).amount(ex.getAmount()).build());
     }
 }
 

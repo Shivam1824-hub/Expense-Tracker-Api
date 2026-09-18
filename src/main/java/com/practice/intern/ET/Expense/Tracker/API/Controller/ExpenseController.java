@@ -1,6 +1,5 @@
 package com.practice.intern.ET.Expense.Tracker.API.Controller;
 
-import com.practice.intern.ET.Expense.Tracker.API.Model.Expense;
 import com.practice.intern.ET.Expense.Tracker.API.Service.ExpenseService;
 import com.practice.intern.ET.Expense.Tracker.API.dto.ExpenseRequestDto;
 import com.practice.intern.ET.Expense.Tracker.API.dto.ExpenseResponseDto;
@@ -55,7 +54,7 @@ public class ExpenseController {
          return ResponseEntity.ok(message);
     }
 
-    @GetMapping
+    @GetMapping("/search")
     public ResponseEntity<Page<ExpenseResponseDto>> searchExpense(@Valid @ModelAttribute ExpenseSearchRequestDto search){
     Page<ExpenseResponseDto> ex = service.searchExpense(search);
     return ResponseEntity.ok(ex);

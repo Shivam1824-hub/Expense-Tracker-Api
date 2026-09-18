@@ -1,5 +1,6 @@
 package com.practice.intern.ET.Expense.Tracker.API.Service;
 
+import com.practice.intern.ET.Expense.Tracker.API.Exception.CategoryNotFoundException;
 import com.practice.intern.ET.Expense.Tracker.API.Exception.ExpenseNotFoundException;
 import com.practice.intern.ET.Expense.Tracker.API.Model.Category;
 import com.practice.intern.ET.Expense.Tracker.API.Model.Expense;
@@ -30,7 +31,7 @@ public class ExpenseService {
     }
 
     public ExpenseResponseDto addExpense(ExpenseRequestDto requestDto) {
-        Category category = categoryRepository.findById(requestDto.getCategoryId()).orElseThrow(()-> new ResponseStatusException(HttpStatus.NOT_FOUND));
+        Category category = categoryRepository.findById(requestDto.getCategoryId()).orElseThrow(()-> new CategoryNotFoundException("Category not found with id"+requestDto.getCategoryId()));
         Expense expense = Expense.builder()
                 .item(requestDto.getItem())
                 .category(category)
@@ -56,14 +57,15 @@ public class ExpenseService {
 
     public ExpenseResponseDto updateByIdExpense(Long id, ExpenseRequestDto updateInfo) {
         Expense ex = expenseRepository.findById(id).orElseThrow(() -> new ExpenseNotFoundException("Expense data not found with id " + id));
-        Category category = categoryRepository.findById(updateInfo.getCategoryId()).orElseThrow(()-> new ResponseStatusException(HttpStatus.NOT_FOUND));
+        Category category = categoryRepository.findById(updateInfo.getCategoryId()).orElseThrow(()->new CategoryNotFoundException("Category not found with id"+updateInfo.getCategoryId()));
         ex.setItem(updateInfo.getItem());
         ex.setCategory(category);
         ex.setQuantityValue(updateInfo.getQuantityValue());
         ex.setAmount(updateInfo.getAmount());
 
         Expense saved = expenseRepository.save(ex);
-        return ExpenseResponseDto.builder().item(saved.getItem())
+        return ExpenseResponseDto.builder().id(saved.getId())
+                .item(saved.getItem())
                 .categoryId(saved.getCategory().getId())
                 .quantityValue(saved.getQuantityValue())
                 .amount(saved.getAmount())
@@ -85,10 +87,11 @@ public Page<ExpenseResponseDto> searchExpense(ExpenseSearchRequestDto searchRequ
         Specification<Expense> spec = (root, query, cb) -> cb.conjunction();
 
         if(searchRequestDto.getKeyword()!= null && !searchRequestDto.getKeyword().trim().isEmpty()){
-            String matachPattern ="%"+searchRequestDto.getKeyword()+"%";
+            String matchPattern =
+                    "%" + searchRequestDto.getKeyword().trim().toLowerCase() + "%";
             spec = spec.and((root, query, cb) ->cb.or(
-                    cb.like(cb.lower(root.get("item")),matachPattern),
-                    cb.like(cb.lower(root.get("category")),matachPattern)));
+                    cb.like(cb.lower(root.get("item")),matchPattern),
+                    cb.like(cb.lower(root.get("category")),matchPattern)));
         }
     Page<Expense> expensePage = expenseRepository.findAll(spec,pageable);
     return expensePage.map(ex -> ExpenseResponseDto.builder().id(ex.getId()).item(ex.getItem())

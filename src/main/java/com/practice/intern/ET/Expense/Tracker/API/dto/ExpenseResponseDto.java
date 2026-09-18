@@ -2,11 +2,13 @@ package com.practice.intern.ET.Expense.Tracker.API.dto;
 
 import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import java.math.BigDecimal;
 
 @Data
 @Builder
+@NoArgsConstructor
 public class ExpenseResponseDto {
 
     private Long id;

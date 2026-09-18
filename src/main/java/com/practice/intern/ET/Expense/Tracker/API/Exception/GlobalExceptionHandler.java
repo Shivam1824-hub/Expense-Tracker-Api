@@ -1,6 +1,5 @@
 package com.practice.intern.ET.Expense.Tracker.API.Exception;
 
-import org.apache.catalina.mbeans.SparseUserDatabaseMBean;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.FieldError;

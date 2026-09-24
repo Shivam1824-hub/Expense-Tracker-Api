@@ -47,4 +47,12 @@ public class CategoryService {
         Category updated = categoryRepository.save(category);
         return new CategoryResponseDto(updated.getId(), updated.getName());
     }
+
+    public String delete(Long id){
+        if (!categoryRepository.existsById(id)){
+            throw new CategoryNotFoundException("Category data not found with id "+id);
+        }
+        categoryRepository.deleteById(id);
+        return "data has been deleted";
+    }
 }

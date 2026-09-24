@@ -39,8 +39,14 @@ public class CategoryController {
         return ResponseEntity.ok(getById);
     }
 
+    @PutMapping("/{id}")
     public ResponseEntity<CategoryResponseDto> updateById(@PathVariable Long id,@RequestParam @Valid CategoryRequestDto updateInfo){
         CategoryResponseDto updatedByid = service.updateByIdCategory(id,updateInfo);
         return ResponseEntity.ok(updatedByid);
+    }
+
+    public ResponseEntity<String> delete(@PathVariable Long id){
+        String message = service.delete(id);
+        return ResponseEntity.ok(message);
     }
 }

@@ -5,13 +5,11 @@ import com.practice.intern.ET.Expense.Tracker.API.Service.CategoryService;
 import com.practice.intern.ET.Expense.Tracker.API.dto.CategoryRequestDto;
 import com.practice.intern.ET.Expense.Tracker.API.dto.CategoryResponseDto;
 import com.practice.intern.ET.Expense.Tracker.API.dto.ExpenseResponseDto;
+import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -39,5 +37,10 @@ public class CategoryController {
     public ResponseEntity<CategoryResponseDto> getById(@PathVariable Long id){
         CategoryResponseDto getById = service.getByIdCategory(id);
         return ResponseEntity.ok(getById);
+    }
+
+    public ResponseEntity<CategoryResponseDto> updateById(@PathVariable Long id,@RequestParam @Valid CategoryRequestDto updateInfo){
+        CategoryResponseDto updatedByid = service.updateByIdCategory(id,updateInfo);
+        return ResponseEntity.ok(updatedByid);
     }
 }

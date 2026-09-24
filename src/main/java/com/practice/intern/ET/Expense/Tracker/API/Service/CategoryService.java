@@ -39,4 +39,12 @@ public class CategoryService {
                 ()->new CategoryNotFoundException("Category data not found with id "+id));
         return new CategoryResponseDto(findId.getId(),findId.getName());
     }
+
+    public CategoryResponseDto updateByIdCategory(Long id, CategoryRequestDto requestDto){
+        Category category = categoryRepository.findById(requestDto.getId()).orElseThrow(
+                () -> new CategoryNotFoundException("Category data not found with id "+requestDto.getId()));
+        category.setName(requestDto.getName());
+        Category updated = categoryRepository.save(category);
+        return new CategoryResponseDto(updated.getId(), updated.getName());
+    }
 }

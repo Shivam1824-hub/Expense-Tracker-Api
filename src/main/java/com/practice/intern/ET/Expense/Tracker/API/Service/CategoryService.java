@@ -2,9 +2,12 @@ package com.practice.intern.ET.Expense.Tracker.API.Service;
 
 import com.practice.intern.ET.Expense.Tracker.API.Exception.CategoryNotFoundException;
 import com.practice.intern.ET.Expense.Tracker.API.Model.Category;
+import com.practice.intern.ET.Expense.Tracker.API.Model.Expense;
 import com.practice.intern.ET.Expense.Tracker.API.Repository.CategoryRepository;
+import com.practice.intern.ET.Expense.Tracker.API.Repository.ExpenseRepository;
 import com.practice.intern.ET.Expense.Tracker.API.dto.CategoryRequestDto;
 import com.practice.intern.ET.Expense.Tracker.API.dto.CategoryResponseDto;
+import com.practice.intern.ET.Expense.Tracker.API.dto.ExpenseResponseDto;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -12,9 +15,11 @@ import java.util.List;
 @Service
 public class CategoryService {
     private final CategoryRepository categoryRepository;
+    private final ExpenseRepository expenseRepository;
 
-    public CategoryService(CategoryRepository categoryRepository) {
+    public CategoryService(CategoryRepository categoryRepository, ExpenseRepository expenseRepository) {
         this.categoryRepository = categoryRepository;
+        this.expenseRepository = expenseRepository;
     }
     public CategoryResponseDto createCategory(CategoryRequestDto requestDto){
         Category category = new Category();
@@ -53,5 +58,19 @@ public class CategoryService {
         }
         categoryRepository.deleteById(id);
         return "data has been deleted";
+    }
+
+    public List<ExpenseResponseDto> getExpensesByCategory(Long categoryId) {
+        List<Expense> expenses =
+                expenseRepository.findByCategory_Id(categoryId);
+        return expenses.stream()
+                .map(ex -> ExpenseResponseDto.builder()
+                        .id(ex.getId())
+                        .item(ex.getItem())
+                        .categoryId(ex.getCategory().getId())
+                        .quantityValue(ex.getQuantityValue())
+                        .amount(ex.getAmount())
+                        .build())
+                .toList();
     }
 }

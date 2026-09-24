@@ -1,6 +1,8 @@
 package com.practice.intern.ET.Expense.Tracker.API.Controller;
 
+import com.practice.intern.ET.Expense.Tracker.API.Model.Expense;
 import com.practice.intern.ET.Expense.Tracker.API.Service.ExpenseService;
+import com.practice.intern.ET.Expense.Tracker.API.dto.CategoryResponseDto;
 import com.practice.intern.ET.Expense.Tracker.API.dto.ExpenseRequestDto;
 import com.practice.intern.ET.Expense.Tracker.API.dto.ExpenseResponseDto;
 import com.practice.intern.ET.Expense.Tracker.API.dto.ExpenseSearchRequestDto;
@@ -59,5 +61,6 @@ public class ExpenseController {
     Page<ExpenseResponseDto> ex = service.searchExpense(search);
     return ResponseEntity.ok(ex);
     }
+
 
 }

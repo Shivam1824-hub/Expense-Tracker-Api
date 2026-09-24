@@ -3,6 +3,7 @@ package com.practice.intern.ET.Expense.Tracker.API.Controller;
 import com.practice.intern.ET.Expense.Tracker.API.Service.CategoryService;
 import com.practice.intern.ET.Expense.Tracker.API.dto.CategoryRequestDto;
 import com.practice.intern.ET.Expense.Tracker.API.dto.CategoryResponseDto;
+import com.practice.intern.ET.Expense.Tracker.API.dto.ExpenseResponseDto;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -46,5 +47,11 @@ public class CategoryController {
     public ResponseEntity<String> delete(@PathVariable Long id){
         String message = service.delete(id);
         return ResponseEntity.ok(message);
+    }
+
+    @GetMapping("/{id}/expenses")
+    public ResponseEntity<List<ExpenseResponseDto>> getExpensesByCategory(@PathVariable Long id){
+        List<ExpenseResponseDto> get = service.getExpensesByCategory(id);
+        return ResponseEntity.ok(get);
     }
 }

@@ -1,5 +1,7 @@
 package com.practice.intern.ET.Expense.Tracker.API.dto;
 
+import com.practice.intern.ET.Expense.Tracker.API.Model.Category;
+import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -9,6 +11,7 @@ import java.math.BigDecimal;
 @Data
 @Builder
 @NoArgsConstructor
+@AllArgsConstructor
 public class ExpenseResponseDto {
 
     private Long id;
@@ -16,13 +19,4 @@ public class ExpenseResponseDto {
     private Long categoryId;
     private double quantityValue;
     private BigDecimal amount;
-
-
-    public ExpenseResponseDto(Long id, String item, Long categoryId, double quantityValue, BigDecimal amount) {
-        this.id = id;
-        this.item = item;
-        this.categoryId = categoryId;
-        this.quantityValue = quantityValue;
-        this.amount = amount;
-    }
 }

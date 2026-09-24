@@ -6,6 +6,7 @@ import com.practice.intern.ET.Expense.Tracker.API.Model.Category;
 import com.practice.intern.ET.Expense.Tracker.API.Model.Expense;
 import com.practice.intern.ET.Expense.Tracker.API.Repository.CategoryRepository;
 import com.practice.intern.ET.Expense.Tracker.API.Repository.ExpenseRepository;
+import com.practice.intern.ET.Expense.Tracker.API.dto.CategoryResponseDto;
 import com.practice.intern.ET.Expense.Tracker.API.dto.ExpenseRequestDto;
 import com.practice.intern.ET.Expense.Tracker.API.dto.ExpenseResponseDto;
 import com.practice.intern.ET.Expense.Tracker.API.dto.ExpenseSearchRequestDto;
@@ -85,7 +86,7 @@ public class ExpenseService {
         return "data has been deleted";
     }
 
-public Page<ExpenseResponseDto> searchExpense(ExpenseSearchRequestDto searchRequestDto){
+    public Page<ExpenseResponseDto> searchExpense(ExpenseSearchRequestDto searchRequestDto){
     String sortField = searchRequestDto.getSort();
     if ("category".equals(sortField)) {
         sortField = "category.name";}
@@ -104,5 +105,7 @@ public Page<ExpenseResponseDto> searchExpense(ExpenseSearchRequestDto searchRequ
     Page<Expense> expensePage = expenseRepository.findAll(spec,pageable);
     return expensePage.map(this::toResponseDto);
     }
+
+
 }
 

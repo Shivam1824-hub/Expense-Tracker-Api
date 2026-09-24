@@ -21,4 +21,4 @@ public class ExpenseSearchRequestDto {
             message = "direction must be one of: ascending or descending")
     private String direction = "asc";
 
-    }
+}

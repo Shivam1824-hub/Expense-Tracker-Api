@@ -60,17 +60,23 @@ public class CategoryService {
         return "data has been deleted";
     }
 
-    public List<ExpenseResponseDto> getExpensesByCategory(Long categoryId) {
+    public List<ExpenseResponseDto> getExpensesByCategory(Long categoryId){
+        if (!categoryRepository.existsById(categoryId)) {
+            throw new CategoryNotFoundException("Category data not found with id " + categoryId);
+        }
         List<Expense> expenses =
                 expenseRepository.findByCategory_Id(categoryId);
         return expenses.stream()
-                .map(ex -> ExpenseResponseDto.builder()
-                        .id(ex.getId())
-                        .item(ex.getItem())
-                        .categoryId(ex.getCategory().getId())
-                        .quantityValue(ex.getQuantityValue())
-                        .amount(ex.getAmount())
-                        .build())
-                .toList();
+                .map(this::toResponseDto).toList();
     }
+    public ExpenseResponseDto toResponseDto(Expense expense){
+        return ExpenseResponseDto.builder()
+                .id(expense.getId())
+                .item(expense.getItem())
+                .categoryId(expense.getCategory().getId())
+                .quantityValue(expense.getQuantityValue())
+                .amount(expense.getAmount())
+                .build();
+    }
+
 }

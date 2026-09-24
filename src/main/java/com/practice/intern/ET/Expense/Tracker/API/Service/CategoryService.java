@@ -16,7 +16,6 @@ public class CategoryService {
     public CategoryService(CategoryRepository categoryRepository) {
         this.categoryRepository = categoryRepository;
     }
-    //CRUD - post, get, put, delete
     public CategoryResponseDto createCategory(CategoryRequestDto requestDto){
         Category category = new Category();
         category.setName(requestDto.getName());
@@ -41,8 +40,8 @@ public class CategoryService {
     }
 
     public CategoryResponseDto updateByIdCategory(Long id, CategoryRequestDto requestDto){
-        Category category = categoryRepository.findById(requestDto.getId()).orElseThrow(
-                () -> new CategoryNotFoundException("Category data not found with id "+requestDto.getId()));
+        Category category = categoryRepository.findById(id).orElseThrow(
+                () -> new CategoryNotFoundException("Category data not found with id "+id));
         category.setName(requestDto.getName());
         Category updated = categoryRepository.save(category);
         return new CategoryResponseDto(updated.getId(), updated.getName());
